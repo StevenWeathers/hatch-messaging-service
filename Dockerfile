@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache git ca-certificates
 RUN adduser -D -g '' appuser
 # Copy the go source
 COPY ./cmd/ $GOPATH/src/github.com/stevenweathers/hatch-messaging-service/cmd/
+COPY ./domain/ $GOPATH/src/github.com/stevenweathers/hatch-messaging-service/domain/
 COPY ./internal/ $GOPATH/src/github.com/stevenweathers/hatch-messaging-service/internal/
 COPY ./*.go $GOPATH/src/github.com/stevenweathers/hatch-messaging-service/
 COPY ./go.mod $GOPATH/src/github.com/stevenweathers/hatch-messaging-service/

@@ -35,9 +35,9 @@ func New(ctx context.Context, cfgFile string) *Config {
 	viper.SetDefault("listen_address", ":8080")
 	viper.SetDefault("db.host", "localhost")
 	viper.SetDefault("db.port", "5432")
-	viper.SetDefault("db.user", "postgres")
-	viper.SetDefault("db.password", "password")
-	viper.SetDefault("db.name", "hatch_messaging_service")
+	viper.SetDefault("db.user", "messaging_user")
+	viper.SetDefault("db.password", "messaging_password")
+	viper.SetDefault("db.name", "messaging_service")
 
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
 	viper.AutomaticEnv()

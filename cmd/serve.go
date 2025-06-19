@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/StevenWeathers/hatch-messaging-service/internal/db"
+	"github.com/StevenWeathers/hatch-messaging-service/internal/db/conversation"
 	"github.com/StevenWeathers/hatch-messaging-service/internal/http"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +23,7 @@ func init() {
 }
 
 func serve() {
-	_, err := db.New(db.Config{
+	database, err := db.New(db.Config{
 		Host:     c.Database.Host,
 		Port:     c.Database.Port,
 		User:     c.Database.User,
@@ -32,10 +33,13 @@ func serve() {
 	if err != nil {
 		panic(err)
 	}
+	conversationDBSvc := conversation.Service{
+		DB: database,
+	}
 
 	h := http.New(http.Config{
 		ListenAddress: c.ListenAddress,
-	})
+	}, &conversationDBSvc)
 
 	err = h.ListenAndServe(context.Background())
 	if err != nil {
