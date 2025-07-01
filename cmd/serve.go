@@ -6,6 +6,7 @@ import (
 	"github.com/StevenWeathers/hatch-messaging-service/internal/db"
 	"github.com/StevenWeathers/hatch-messaging-service/internal/db/conversation"
 	"github.com/StevenWeathers/hatch-messaging-service/internal/http"
+	"github.com/StevenWeathers/hatch-messaging-service/internal/scheduled"
 	"github.com/spf13/cobra"
 )
 
@@ -36,6 +37,9 @@ func serve() {
 	conversationDBSvc := conversation.Service{
 		DB: database,
 	}
+
+	scheduledSvc := scheduled.New(&conversationDBSvc)
+	go scheduledSvc.SendScheduledMessages()
 
 	h := http.New(http.Config{
 		ListenAddress: c.ListenAddress,

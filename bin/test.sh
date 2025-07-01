@@ -108,3 +108,78 @@ curl -X GET "$BASE_URL/api/conversations/1/messages" \
   -w "\nStatus: %{http_code}\n\n"
 
 echo "=== Test script completed ===" 
+
+# Test Rate Limit
+
+echo "9. Testing SMS send..."
+curl -X POST "$BASE_URL/api/messages/sms" \
+  -H "$CONTENT_TYPE" \
+  -d '{
+    "from": "+12016661236",
+    "to": "+18045551234",
+    "type": "sms",
+    "body": "Hello! This is a test SMS message.",
+    "attachments": null,
+    "timestamp": "2024-11-01T14:00:00Z"
+  }' \
+  -w "\nStatus: %{http_code}\n\n"
+echo "10. Testing SMS send..."
+curl -X POST "$BASE_URL/api/messages/sms" \
+  -H "$CONTENT_TYPE" \
+  -d '{
+    "from": "+12016661236",
+    "to": "+18045551234",
+    "type": "sms",
+    "body": "Hello! This is a test SMS message.",
+    "attachments": null,
+    "timestamp": "2024-11-01T14:00:00Z"
+  }' \
+  -w "\nStatus: %{http_code}\n\n"
+echo "11. Testing SMS send..."
+curl -X POST "$BASE_URL/api/messages/sms" \
+  -H "$CONTENT_TYPE" \
+  -d '{
+    "from": "+12016661236",
+    "to": "+18045551234",
+    "type": "sms",
+    "body": "Hello! This is a test SMS message.",
+    "attachments": null,
+    "timestamp": "2024-11-01T14:00:00Z"
+  }' \
+  -w "\nStatus: %{http_code}\n\n"
+echo "12. Testing SMS send..."
+curl -X POST "$BASE_URL/api/messages/sms" \
+  -H "$CONTENT_TYPE" \
+  -d '{
+    "from": "+12016661236",
+    "to": "+18045551234",
+    "type": "sms",
+    "body": "Hello! This is a test SMS message.",
+    "attachments": null,
+    "timestamp": "2024-11-01T14:00:00Z"
+  }' \
+  -w "\nStatus: %{http_code}\n\n"
+echo "13. Testing SMS send..."
+curl -X POST "$BASE_URL/api/messages/sms" \
+  -H "$CONTENT_TYPE" \
+  -d '{
+    "from": "+12016661236",
+    "to": "+18045551234",
+    "type": "sms",
+    "body": "Hello! This is a test SMS message.",
+    "attachments": null,
+    "timestamp": "2024-11-01T14:00:00Z"
+  }' \
+  -w "\nStatus: %{http_code}\n\n"
+echo "14. Testing SMS send..."
+curl -X POST "$BASE_URL/api/messages/sms" \
+  -H "$CONTENT_TYPE" \
+  -d '{
+    "from": "+12016661236",
+    "to": "+18045551234",
+    "type": "sms",
+    "body": "Hello! This is a test SMS message.",
+    "attachments": null,
+    "timestamp": "2024-11-01T14:00:00Z"
+  }' \
+  -w "\nStatus: %{http_code}\n\n"

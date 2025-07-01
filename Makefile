@@ -27,7 +27,6 @@ run:
 test:
 	@echo "Running tests..."
 	@echo "Starting test database if not running..."
-	@docker-compose up -d
 	@echo "Running test script..."
 	@./bin/test.sh
 

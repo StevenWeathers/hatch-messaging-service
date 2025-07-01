@@ -37,6 +37,23 @@ func (o *Endpoints) handleSMSMessage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// rate limit 5 per 60 seconds
+	// call the db to get a count of messages the senderID has sent in last 60 seconds
+	// if 5 >= then would respond with an error message and status code
+	messageCount, err := o.conversationDBSvc.GetMessageCountBySenderID(ctx, senderID)
+	if err != nil {
+		slog.ErrorContext(ctx, fmt.Sprintf("error upserting sender contact: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if messageCount >= 5 {
+		slog.ErrorContext(ctx, "max message count of 5 per 60 seconds reached")
+		w.WriteHeader(http.StatusTooManyRequests)
+		return
+	}
+
 	receiverID, err := o.conversationDBSvc.UpsertContact(ctx, domain.Contact{
 		FirstName:   "TestFirstname",
 		LastName:    "TestLastname",
@@ -55,13 +72,16 @@ func (o *Endpoints) handleSMSMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = o.conversationDBSvc.SaveMessage(ctx, domain.Message{
+	message := domain.Message{
 		ConversationID: convoId,
 		SenderID:       senderID,
 		Type:           u.Type,
 		Body:           u.Body,
 		Timestamp:      u.Timestamp,
-	})
+		ScheduledTime:  u.ScheduledTime,
+	}
+
+	err = o.conversationDBSvc.SaveMessage(ctx, message)
 	if err != nil {
 		slog.ErrorContext(ctx, fmt.Sprintf("error saving message: %v", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -72,6 +92,18 @@ func (o *Endpoints) handleSMSMessage(w http.ResponseWriter, r *http.Request) {
 	// If the service returns an error I would log it and return an error response.
 	// Additionally, depending on the service design I might store the send status in the database and handle retries.
 	// or use a queuing system like Kafka to handle incoming messages.
+
+	if message.ScheduledTime != nil {
+		// do nothing else with message and handle it in a cron like job
+		err = sendJsonResponse(w, `{"success": true}`)
+		if err != nil {
+			slog.ErrorContext(ctx, fmt.Sprintf("error sending json response: %v", err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// update message with SENT column boolean to TRUE
 
 	err = sendJsonResponse(w, `{"success": true}`)
 	if err != nil {
